@@ -1,4 +1,4 @@
-package code.apiversion.resources;
+package code.apiversion.controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

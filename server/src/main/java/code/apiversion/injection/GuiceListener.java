@@ -1,4 +1,4 @@
-package code.apiversion.config;
+package code.apiversion.injection;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

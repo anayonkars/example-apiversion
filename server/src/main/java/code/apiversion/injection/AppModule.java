@@ -1,7 +1,8 @@
-package code.apiversion.config;
+package code.apiversion.injection;
 
 import com.google.inject.AbstractModule;
-import code.apiversion.resources.ExampleController;
+
+import code.apiversion.controller.ExampleController;
 
 public class AppModule extends AbstractModule {
     @Override

@@ -1,4 +1,4 @@
-D:\code\apiversion\server\src\main\java\code\apiversion\config\AppModule.java
-D:\code\apiversion\server\src\main\java\code\apiversion\config\GuiceListener.java
+D:\code\apiversion\server\src\main\java\code\apiversion\controller\ExampleController.java
+D:\code\apiversion\server\src\main\java\code\apiversion\injection\AppModule.java
+D:\code\apiversion\server\src\main\java\code\apiversion\injection\GuiceListener.java
 D:\code\apiversion\server\src\main\java\code\apiversion\Main.java
-D:\code\apiversion\server\src\main\java\code\apiversion\resources\ExampleController.java

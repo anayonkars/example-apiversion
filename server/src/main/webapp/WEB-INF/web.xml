@@ -15,7 +15,7 @@
     </filter-mapping>
 
     <listener>
-        <listener-class>code.apiversion.config.GuiceListener</listener-class>
+        <listener-class>code.apiversion.injection.GuiceListener</listener-class>
     </listener>
 
 </web-app>

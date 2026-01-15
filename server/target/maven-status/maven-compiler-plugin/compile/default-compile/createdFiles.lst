@@ -1,5 +1,8 @@
-code\apiversion\config\AppModule.class
-code\apiversion\config\GuiceListener.class
-code\apiversion\resources\ExampleController.class
-code\apiversion\config\GuiceListener$1.class
+code\apiversion\injection\GuiceListener$1.class
+code\apiversion\service\ExampleServiceImpl.class
+code\apiversion\controller\ExampleController.class
+code\apiversion\injection\AppModule.class
 code\apiversion\Main.class
+code\apiversion\service\ExampleService.class
+code\apiversion\injection\GuiceFeature.class
+code\apiversion\injection\GuiceListener.class

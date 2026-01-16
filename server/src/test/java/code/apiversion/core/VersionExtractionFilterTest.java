@@ -64,4 +64,39 @@ public class VersionExtractionFilterTest {
         // verify setRequestUri is NOT called
         verify(requestContext, org.mockito.Mockito.never()).setRequestUri(any(), any());
     }
+
+    @Test
+    public void testFilterHandlesVersionInMiddleOfPath() throws IOException {
+        String originalPath = "/api/v2/resource";
+        URI baseUri = URI.create("http://localhost:8800/");
+
+        when(uriInfo.getPath()).thenReturn(originalPath);
+        when(uriInfo.getBaseUri()).thenReturn(baseUri);
+
+        filter.filter(requestContext);
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(requestContext).setRequestUri(uriCaptor.capture());
+
+        // /api/v2/resource -> /api/resource
+        assertEquals("http://localhost:8800/api/resource", uriCaptor.getValue().toString());
+        assertEquals(2, RequestVersionContext.getVersion());
+    }
+
+    @Test
+    public void testFilterHandlesEmptyPathAfterRewrite() throws IOException {
+        String originalPath = "/v1/";
+        URI baseUri = URI.create("http://localhost:8800/");
+
+        when(uriInfo.getPath()).thenReturn(originalPath);
+        when(uriInfo.getBaseUri()).thenReturn(baseUri);
+
+        filter.filter(requestContext);
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(requestContext).setRequestUri(uriCaptor.capture());
+
+        assertEquals("http://localhost:8800/", uriCaptor.getValue().toString());
+        assertEquals(1, RequestVersionContext.getVersion());
+    }
 }

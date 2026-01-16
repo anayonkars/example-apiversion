@@ -1,8 +1,0 @@
-target/
-*.class
-*.log
-.vscode/
-.idea/
-*.iml
-.DS_Store
-mvn_output*.txt

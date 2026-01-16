@@ -18,8 +18,16 @@ public class ExampleController {
     }
 
     @GET
+    @Path("/greeting")
     @Produces(MediaType.TEXT_PLAIN)
     public String getExample() {
         return exampleService.getGreeting();
+    }
+
+    @GET
+    @Path("/details")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getDetails() {
+        return exampleService.getDetails();
     }
 }

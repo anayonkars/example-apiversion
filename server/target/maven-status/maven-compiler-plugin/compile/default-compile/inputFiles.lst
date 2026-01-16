@@ -1,6 +1,8 @@
 D:\code\example-apiversion\server\src\main\java\code\apiversion\controller\ExampleController.java
 D:\code\example-apiversion\server\src\main\java\code\apiversion\core\RequestVersionContext.java
+D:\code\example-apiversion\server\src\main\java\code\apiversion\core\VersionedProxyProvider.java
 D:\code\example-apiversion\server\src\main\java\code\apiversion\core\VersionExtractionFilter.java
+D:\code\example-apiversion\server\src\main\java\code\apiversion\core\VersionRoutingHandler.java
 D:\code\example-apiversion\server\src\main\java\code\apiversion\injection\AppModule.java
 D:\code\example-apiversion\server\src\main\java\code\apiversion\injection\GuiceFeature.java
 D:\code\example-apiversion\server\src\main\java\code\apiversion\injection\GuiceListener.java

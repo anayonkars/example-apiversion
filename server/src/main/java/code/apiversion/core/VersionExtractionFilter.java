@@ -16,12 +16,14 @@ import javax.ws.rs.core.UriInfo;
 @PreMatching
 @Priority(500)
 public class VersionExtractionFilter implements ContainerRequestFilter {
-    private static final Pattern V_PATTERN = Pattern.compile("^/?v(\\d+)/");
+    private static final Pattern V_PATTERN = Pattern.compile("/v(\\d+)/");
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        System.out.println("Inside VersionExtractionFilter");
         UriInfo uriInfo = requestContext.getUriInfo();
         String path = uriInfo.getPath();
+        System.out.println("Path is: " + path);
         Matcher matcher = V_PATTERN.matcher(path);
         if (matcher.find()) {
             Integer apiVersion = Integer.parseInt(matcher.group(1));

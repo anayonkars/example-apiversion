@@ -20,7 +20,7 @@ public class GuiceListener extends GuiceServletContextListener {
                 Map<String, String> params = new HashMap<>();
                 params.put("javax.ws.rs.Application", "javax.ws.rs.core.Application");
                 params.put("jersey.config.server.provider.packages",
-                        "code.apiversion.controller;code.apiversion.injection");
+                        "code.apiversion.controller;code.apiversion.injection;code.apiversion.core");
 
                 serve("/*").with(ServletContainer.class, params);
             }

@@ -6,7 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-public class Main {
+public class Client {
 
     private static final String BASE_URL = "http://localhost:8800/example";
 

@@ -12,12 +12,26 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.core.UriInfo;
 
+/**
+ * A JAX-RS filter that extracts the API version from the request path (e.g.,
+ * /v1/resource)
+ * and rewrites the path to be version-agnostic (e.g., /resource).
+ * The extracted version is stored in {@link RequestVersionContext}.
+ */
 @Provider
 @PreMatching
 @Priority(500)
 public class VersionExtractionFilter implements ContainerRequestFilter {
     private static final Pattern V_PATTERN = Pattern.compile("/v(\\d+)/");
 
+    /**
+     * Inspects the request URI for a version prefix (e.g., /v1/).
+     * If found, extracts the version, stores it, and rewrites the request URI
+     * to remove the version prefix, allowing standard routing to proceed.
+     *
+     * @param requestContext The container request context.
+     * @throws IOException If an I/O error occurs.
+     */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         System.out.println("Inside VersionExtractionFilter");

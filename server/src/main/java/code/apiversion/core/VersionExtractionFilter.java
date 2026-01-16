@@ -29,11 +29,18 @@ public class VersionExtractionFilter implements ContainerRequestFilter {
             Integer apiVersion = Integer.parseInt(matcher.group(1));
             System.out.println("Version received is: " + apiVersion);
             RequestVersionContext.setVersion(apiVersion);
-            String newPath = matcher.replaceFirst("");
-            if (newPath.isEmpty()) {
-                newPath = "/";
+            String newPath = matcher.replaceFirst("/");
+            System.out.println("New path (relative): " + newPath);
+
+            // Ensure the new path is treated as relative to base URI
+            if (newPath.startsWith("/")) {
+                newPath = newPath.substring(1);
             }
-            requestContext.setRequestUri(uriInfo.getBaseUri(), URI.create(newPath));
+            if (newPath.isEmpty()) {
+                requestContext.setRequestUri(uriInfo.getBaseUri());
+            } else {
+                requestContext.setRequestUri(uriInfo.getBaseUri().resolve(newPath));
+            }
         }
     }
 }

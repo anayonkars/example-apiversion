@@ -18,12 +18,12 @@ public class Client {
 
         invokeEndpoint(client, "/greeting");
         invokeEndpoint(client, "/details");
-        /*
-         * invokeEndpointWithVersion(client, "/greeting", 1);
-         * invokeEndpointWithVersion(client, "/details", 1);
-         * invokeEndpointWithVersion(client, "/greeting", 2);
-         * invokeEndpointWithVersion(client, "/details", 2);
-         */
+
+        invokeEndpointWithVersion(client, "/greeting", 1);
+        invokeEndpointWithVersion(client, "/details", 1);
+        invokeEndpointWithVersion(client, "/greeting", 2);
+        invokeEndpointWithVersion(client, "/details", 2);
+
     }
 
     private static void invokeEndpointWithVersion(HttpClient client, String path, int version) {

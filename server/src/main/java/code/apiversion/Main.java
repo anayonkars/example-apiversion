@@ -20,5 +20,13 @@ public class Main {
         System.out.println(exampleController.getExample());
         System.out.println(exampleController.getDetails());
         RequestVersionContext.clearVersion();
+        RequestVersionContext.setVersion(3);
+        System.out.println(exampleController.getExample());
+        System.out.println(exampleController.getDetails());
+        RequestVersionContext.clearVersion();
+        RequestVersionContext.setVersion(4);
+        System.out.println(exampleController.getExample());
+        System.out.println(exampleController.getDetails());
+        RequestVersionContext.clearVersion();
     }
 }

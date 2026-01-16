@@ -23,6 +23,10 @@ public class Client {
         invokeEndpointWithVersion(client, "/details", 1);
         invokeEndpointWithVersion(client, "/greeting", 2);
         invokeEndpointWithVersion(client, "/details", 2);
+        invokeEndpointWithVersion(client, "/greeting", 3);
+        invokeEndpointWithVersion(client, "/details", 3);
+        invokeEndpointWithVersion(client, "/greeting", 4);
+        invokeEndpointWithVersion(client, "/details", 4);
 
     }
 

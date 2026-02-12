@@ -47,7 +47,7 @@ Example:
 Run the included unit and integration tests to see the logic in action:
 
 ```bash
-mvn test
+mvnw test
 ```
 
 ## Setup
@@ -55,6 +55,6 @@ mvn test
 1.  Clone the repository.
 2.  Build the project:
     ```bash
-    mvn clean install
+    mvnw clean install
     ```
 3.  Run the tests as shown above.

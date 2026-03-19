@@ -48,12 +48,19 @@ public class VersionRoutingHandler<T> implements InvocationHandler {
 
         // Fallback Logic: If V3 requested but only V2 exists, use V2.
         T target = null;
+        int resolvedVersion = version;
         for (int v = version; v >= 1; v--) {
             target = implementations.get(v);
             if (target != null) {
-                LOG.fine(() -> "Routing to version " + v + " (" + target.getClass().getCanonicalName() + ")");
+                resolvedVersion = v;
                 break;
             }
+        }
+
+        if (target != null) {
+            int logVersion = resolvedVersion;
+            T logTarget = target;
+            LOG.fine(() -> "Routing to version " + logVersion + " (" + logTarget.getClass().getCanonicalName() + ")");
         }
 
         if (target == null) {

@@ -61,8 +61,8 @@ public class VersionExtractionFilterTest {
 
         filter.filter(requestContext);
 
-        // verify setRequestUri is NOT called
-        verify(requestContext, org.mockito.Mockito.never()).setRequestUri(any(), any());
+        // verify setRequestUri is NOT called (single-arg overload used by the filter)
+        verify(requestContext, org.mockito.Mockito.never()).setRequestUri(any(URI.class));
     }
 
     @Test

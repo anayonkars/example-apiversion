@@ -2,12 +2,15 @@ package code.apiversion.core;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.core.UriInfo;
@@ -21,7 +24,9 @@ import javax.ws.rs.core.UriInfo;
 @Provider
 @PreMatching
 @Priority(500)
-public class VersionExtractionFilter implements ContainerRequestFilter {
+public class VersionExtractionFilter implements ContainerRequestFilter, ContainerResponseFilter {
+
+    private static final Logger LOG = Logger.getLogger(VersionExtractionFilter.class.getName());
     private static final Pattern V_PATTERN = Pattern.compile("/v(\\d+)/");
 
     /**
@@ -34,17 +39,15 @@ public class VersionExtractionFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        System.out.println("Inside VersionExtractionFilter");
         UriInfo uriInfo = requestContext.getUriInfo();
         String path = uriInfo.getPath();
-        System.out.println("Path is: " + path);
+        LOG.fine(() -> "VersionExtractionFilter path: " + path);
         Matcher matcher = V_PATTERN.matcher(path);
         if (matcher.find()) {
-            Integer apiVersion = Integer.parseInt(matcher.group(1));
-            System.out.println("Version received is: " + apiVersion);
+            int apiVersion = Integer.parseInt(matcher.group(1));
+            LOG.fine(() -> "Extracted API version: " + apiVersion);
             RequestVersionContext.setVersion(apiVersion);
             String newPath = matcher.replaceFirst("/");
-            System.out.println("New path (relative): " + newPath);
 
             // Ensure the new path is treated as relative to base URI
             if (newPath.startsWith("/")) {
@@ -56,5 +59,19 @@ public class VersionExtractionFilter implements ContainerRequestFilter {
                 requestContext.setRequestUri(uriInfo.getBaseUri().resolve(newPath));
             }
         }
+    }
+
+    /**
+     * Clears the ThreadLocal version context after the response is complete.
+     * This is essential in servlet containers where threads are pooled and reused:
+     * without this cleanup, a thread that handled a versioned request (e.g., /v2/resource)
+     * could carry that version into the next unversioned request it processes,
+     * causing incorrect routing. The request filter only sets the version when a
+     * version prefix is present — it does not clear stale values from prior requests.
+     */
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+            throws IOException {
+        RequestVersionContext.clearVersion();
     }
 }

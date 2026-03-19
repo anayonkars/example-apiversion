@@ -62,8 +62,12 @@ public class VersionExtractionFilter implements ContainerRequestFilter, Containe
     }
 
     /**
-     * Clears the ThreadLocal version context after the response is complete
-     * to prevent memory leaks in thread-pooled environments.
+     * Clears the ThreadLocal version context after the response is complete.
+     * This is essential in servlet containers where threads are pooled and reused:
+     * without this cleanup, a thread that handled a versioned request (e.g., /v2/resource)
+     * could carry that version into the next unversioned request it processes,
+     * causing incorrect routing. The request filter only sets the version when a
+     * version prefix is present — it does not clear stale values from prior requests.
      */
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)

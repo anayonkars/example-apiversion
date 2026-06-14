@@ -35,26 +35,45 @@ The core idea is to intercept incoming requests containing version information (
 
 ### Structure
 Requests should be formatted as:
-`GET /example/v{version}/{resource}`
+`GET /server/example/v{version}/{resource}`
 
 Example:
-- `GET /example/v1/greeting` -> Routes to V1 implementation.
-- `GET /example/v2/greeting` -> Routes to V2 implementation.
-- `GET /example/greeting` -> Defaults to V1.
+- `GET /server/example/v1/greeting` → Routes to V1 implementation.
+- `GET /server/example/v2/greeting` → Routes to V2 implementation.
+- `GET /server/example/greeting` → Defaults to V1.
 
-### Testing
+## Build & Run
 
-Run the included unit and integration tests to see the logic in action:
+Use the Gradle wrapper (`./gradlew` on Linux/macOS, `gradlew.bat` on Windows).
+
+### Build all modules
 
 ```bash
-mvnw test
+./gradlew build
 ```
 
-## Setup
+### Run tests
 
-1.  Clone the repository.
-2.  Build the project:
-    ```bash
-    mvnw clean install
-    ```
-3.  Run the tests as shown above.
+```bash
+./gradlew test
+```
+
+### Start the server
+
+```bash
+./gradlew :server:appRun
+```
+
+The server starts on port **8800**. Watch for the following line in the output, which confirms it is ready:
+
+```
+Press any key to stop the server.
+```
+
+### Verify the server is up
+
+```bash
+curl http://localhost:8800/server/example/greeting
+curl http://localhost:8800/server/example/v1/greeting
+curl http://localhost:8800/server/example/v2/greeting
+```

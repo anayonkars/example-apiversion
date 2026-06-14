@@ -10,13 +10,16 @@ import java.net.URI;
 import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class VersionExtractionFilterTest {
 
@@ -30,6 +33,11 @@ public class VersionExtractionFilterTest {
         requestContext = mock(ContainerRequestContext.class);
         uriInfo = mock(UriInfo.class);
         when(requestContext.getUriInfo()).thenReturn(uriInfo);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        RequestVersionContext.clearVersion();
     }
 
     @Test
@@ -98,5 +106,32 @@ public class VersionExtractionFilterTest {
 
         assertEquals("http://localhost:8800/", uriCaptor.getValue().toString());
         assertEquals(1, RequestVersionContext.getVersion());
+    }
+
+    @Test
+    public void testFilterVersionAtStartOfPath() throws IOException {
+        String originalPath = "/v2/resource";
+        URI baseUri = URI.create("http://localhost:8800/");
+
+        when(uriInfo.getPath()).thenReturn(originalPath);
+        when(uriInfo.getBaseUri()).thenReturn(baseUri);
+
+        filter.filter(requestContext);
+
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(requestContext).setRequestUri(uriCaptor.capture());
+
+        assertEquals("http://localhost:8800/resource", uriCaptor.getValue().toString());
+        assertEquals(2, RequestVersionContext.getVersion());
+    }
+
+    @Test
+    public void testResponseFilterClearsVersion() throws IOException {
+        RequestVersionContext.setVersion(5);
+
+        ContainerResponseContext responseContext = mock(ContainerResponseContext.class);
+        filter.filter(requestContext, responseContext);
+
+        assertNull(RequestVersionContext.getVersion());
     }
 }

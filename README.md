@@ -58,6 +58,14 @@ Use the Gradle wrapper (`./gradlew` on Linux/macOS, `gradlew.bat` on Windows).
 ./gradlew test
 ```
 
+### Run mutation tests (PITest)
+
+```bash
+./gradlew :server:pitest
+```
+
+HTML and XML reports are generated at `server/build/reports/pitest/`.
+
 ### Start the server
 
 ```bash

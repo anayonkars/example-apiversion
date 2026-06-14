@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.UriInfo;
 
 import java.lang.reflect.Method;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 public class ApiVersioningIntegrationTest {
@@ -100,5 +102,45 @@ public class ApiVersioningIntegrationTest {
         // Verify V2 was called (fallback)
         verify(v2Resource).get();
         verify(v1Resource, never()).get();
+    }
+
+    @Test
+    public void testV1RequestRoutedToV1Implementation() throws Throwable {
+        when(uriInfo.getPath()).thenReturn("/v1/resource");
+
+        filter.filter(requestContext);
+
+        assertEquals(1, RequestVersionContext.getVersion());
+
+        Method method = TestResource.class.getMethod("get");
+        router.invoke(null, method, null);
+
+        verify(v1Resource).get();
+        verify(v2Resource, never()).get();
+    }
+
+    @Test
+    public void testNoVersionInPathDefaultsToV1() throws Throwable {
+        when(uriInfo.getPath()).thenReturn("/resource");
+
+        filter.filter(requestContext);
+
+        assertNull(RequestVersionContext.getVersion());
+
+        Method method = TestResource.class.getMethod("get");
+        router.invoke(null, method, null);
+
+        verify(v1Resource).get();
+        verify(v2Resource, never()).get();
+    }
+
+    @Test
+    public void testResponseFilterClearsVersionContext() throws Exception {
+        RequestVersionContext.setVersion(2);
+
+        ContainerResponseContext responseContext = mock(ContainerResponseContext.class);
+        filter.filter(requestContext, responseContext);
+
+        assertNull(RequestVersionContext.getVersion());
     }
 }

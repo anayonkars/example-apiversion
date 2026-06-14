@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class RequestVersionContextTest {
 
     @AfterEach
@@ -31,5 +33,18 @@ public class RequestVersionContextTest {
     public void testGetVersionWhenNotSet() {
         Integer version = RequestVersionContext.getVersion();
         assertNull(version);
+    }
+
+    @Test
+    public void testThreadIsolation() throws InterruptedException {
+        RequestVersionContext.setVersion(99);
+
+        AtomicReference<Integer> threadVersion = new AtomicReference<>();
+        Thread t = new Thread(() -> threadVersion.set(RequestVersionContext.getVersion()));
+        t.start();
+        t.join();
+
+        assertNull(threadVersion.get(), "Other thread must not inherit caller's version");
+        assertEquals(99, RequestVersionContext.getVersion(), "Caller's version must be unaffected");
     }
 }

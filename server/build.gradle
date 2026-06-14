@@ -1,6 +1,7 @@
 plugins {
     id 'war'
     id 'org.gretty' version '3.1.1'
+    id 'info.solidsoft.pitest' version '1.15.0'
 }
 
 gretty {
@@ -27,4 +28,13 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+pitest {
+    junit5PluginVersion = '1.2.1'
+    targetClasses = ['code.apiversion.*']
+    targetTests = ['code.apiversion.*']
+    mutators = ['DEFAULTS']
+    outputFormats = ['HTML', 'XML']
+    timestampedReports = false
 }

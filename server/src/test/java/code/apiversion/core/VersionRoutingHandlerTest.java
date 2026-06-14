@@ -79,4 +79,14 @@ public class VersionRoutingHandlerTest {
             handler.invoke(null, testMethod, null);
         });
     }
+
+    @Test
+    public void testExceptionFromTargetIsPropagatedUnwrapped() {
+        RequestVersionContext.setVersion(1);
+        when(v1Mock.test()).thenThrow(new RuntimeException("inner error"));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> handler.invoke(null, testMethod, null));
+        assertEquals("inner error", ex.getMessage());
+    }
 }

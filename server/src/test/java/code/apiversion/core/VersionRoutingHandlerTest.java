@@ -4,8 +4,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.ws.rs.NotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -78,6 +81,43 @@ public class VersionRoutingHandlerTest {
         assertThrows(RuntimeException.class, () -> {
             handler.invoke(null, testMethod, null);
         });
+    }
+
+    @Test
+    public void testHugeVersionResolvesToHighestVersionWithoutScanning() {
+        RequestVersionContext.setVersion(Integer.MAX_VALUE);
+
+        // The old decrementing fallback scan took ~6s of CPU for this single call.
+        // assertTimeout (not ...Preemptively) runs on the calling thread, so the
+        // ThreadLocal version set above stays visible to the handler.
+        assertTimeout(Duration.ofSeconds(2), () -> handler.invoke(null, testMethod, null));
+
+        verify(v2Mock, times(1)).test();
+        verify(v1Mock, never()).test();
+    }
+
+    @Test
+    public void testZeroVersionThrowsNotFound() {
+        RequestVersionContext.setVersion(0);
+
+        assertThrows(NotFoundException.class, () -> handler.invoke(null, testMethod, null));
+
+        verify(v1Mock, never()).test();
+        verify(v2Mock, never()).test();
+    }
+
+    @Test
+    public void testHandlerIsUnaffectedByLaterMutationOfSourceMap() throws Throwable {
+        Map<Integer, TestInterface> source = new HashMap<>();
+        source.put(1, v1Mock);
+        VersionRoutingHandler<TestInterface> isolated = new VersionRoutingHandler<>(source);
+
+        source.clear();
+
+        RequestVersionContext.setVersion(1);
+        isolated.invoke(null, testMethod, null);
+
+        verify(v1Mock, times(1)).test();
     }
 
     @Test

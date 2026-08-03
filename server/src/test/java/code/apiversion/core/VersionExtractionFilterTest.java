@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.AfterEach;
@@ -123,6 +124,55 @@ public class VersionExtractionFilterTest {
 
         assertEquals("http://localhost:8800/resource", uriCaptor.getValue().toString());
         assertEquals(2, RequestVersionContext.getVersion());
+    }
+
+    @Test
+    public void testFilterRejectsZeroVersionWithNotFound() throws IOException {
+        when(uriInfo.getPath()).thenReturn("/example/v0/greeting");
+
+        filter.filter(requestContext);
+
+        assertAbortedWithNotFound();
+        assertNull(RequestVersionContext.getVersion());
+        verify(requestContext, org.mockito.Mockito.never()).setRequestUri(any(URI.class));
+    }
+
+    @Test
+    public void testFilterRejectsOversizedVersionWithNotFound() throws IOException {
+        // Would have overflowed Integer.parseInt and escaped as an HTTP 500.
+        when(uriInfo.getPath()).thenReturn("/example/v99999999999999/greeting");
+
+        filter.filter(requestContext);
+
+        assertAbortedWithNotFound();
+        assertNull(RequestVersionContext.getVersion());
+    }
+
+    @Test
+    public void testFilterAcceptsLargestNonOverflowingVersion() throws IOException {
+        when(uriInfo.getPath()).thenReturn("/example/v999999999/greeting");
+        when(uriInfo.getBaseUri()).thenReturn(URI.create("http://localhost:8800/"));
+
+        filter.filter(requestContext);
+
+        assertEquals(999999999, RequestVersionContext.getVersion());
+    }
+
+    @Test
+    public void testFilterClearsStaleVersionFromPooledThread() throws IOException {
+        // Simulate a thread whose previous request left a version behind.
+        RequestVersionContext.setVersion(2);
+        when(uriInfo.getPath()).thenReturn("/example/greeting");
+
+        filter.filter(requestContext);
+
+        assertNull(RequestVersionContext.getVersion());
+    }
+
+    private void assertAbortedWithNotFound() {
+        ArgumentCaptor<Response> responseCaptor = ArgumentCaptor.forClass(Response.class);
+        verify(requestContext).abortWith(responseCaptor.capture());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), responseCaptor.getValue().getStatus());
     }
 
     @Test

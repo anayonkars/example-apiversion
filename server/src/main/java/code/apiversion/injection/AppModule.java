@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.google.inject.AbstractModule;
 
-import code.apiversion.controller.ExampleController;
 import code.apiversion.core.VersionedProxyProvider;
 import code.apiversion.service.ExampleService;
 import code.apiversion.service.ExampleServiceImplV1;
